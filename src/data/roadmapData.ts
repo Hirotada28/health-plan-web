@@ -17,6 +17,10 @@ export const roadmapData: RoadmapItem[] = [
     title: "Month 3: 変化期",
     description: "肌のターンオーバーが完了し、細胞レベルで入れ替わる。",
     color: "rose",
-    checklist: ["肌トーンUP・くすみ抜け", "日中の眠気が消失"],
+    checklist: [
+      "肌トーンUP・くすみ抜け",
+      "シミの輪郭がぼやけてくる",
+      "日中の眠気が消失",
+    ],
   },
 ];

@@ -274,9 +274,11 @@ export default function Home() {
                     Next Step
                   </h3>
                   <p className="text-xs text-slate-400">
-                    余裕ができたら、夜に
-                    <strong className="text-slate-600">亜鉛</strong>
-                    を追加してクレーター修復を加速。
+                    資金に余裕ができたら、夜に
+                    <strong className="text-slate-600">
+                      Chelated Zinc（亜鉛）
+                    </strong>
+                    を追加検討（クレーター修復強化）。
                   </p>
                 </div>
               </div>
@@ -287,13 +289,15 @@ export default function Home() {
         {/* Footer */}
         <div className="mt-auto p-6 text-center bg-slate-50">
           <p className="text-xs text-slate-400 mb-4">
-            全部やる必要はありません。
+            「全部やらなきゃ」と気負う必要はありません。
             <br />
             まずは
             <span className="font-bold text-slate-600">
-              「朝のPV、勝負の日のShake」
+              「朝のPV、大事な日のShake」
             </span>
             から。
+            <br />
+            このシンプルな習慣だけで、身体は確実に変わり始めます。
           </p>
           <a
             href="https://www.neolife-japan.com/product_cat/neolife/"
