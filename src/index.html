@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MVP Body Optimizer | Neolife Startup</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        font-family: "Noto Sans JP", sans-serif;
+        background-color: #f0f4f8;
+      }
+      .chart-container {
+        position: relative;
+        width: 100%;
+        max-width: 500px;
+        height: 300px;
+        margin: 0 auto;
+      }
+      .glass-panel {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+      }
+      .nav-active {
+        border-bottom: 3px solid #10b981;
+        color: #064e3b;
+        font-weight: 700;
+      }
+      .shake-gradient {
+        background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+      }
+      .pv-gradient {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      }
+      .day-card {
+        transition: all 0.2s ease;
+        cursor: pointer;
+      }
+      .day-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      }
+      .day-card.active-day {
+        ring: 2px solid #10b981;
+        transform: scale(1.02);
+      }
+
+      /* Custom Scrollbar for panels */
+      .custom-scroll::-webkit-scrollbar {
+        width: 6px;
+      }
+      .custom-scroll::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+      .custom-scroll::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body class="text-slate-700">
+    <!-- App Container -->
+    <div
+      class="max-w-md mx-auto bg-white min-h-screen shadow-2xl relative overflow-hidden flex flex-col"
+    >
+      <!-- Top Navigation -->
+      <nav
+        class="sticky top-0 z-50 bg-white/95 backdrop-blur shadow-sm px-4 py-3 flex justify-between items-center"
+      >
+        <div class="font-black text-xl tracking-tighter text-slate-800">
+          <span class="text-emerald-500">MVP</span> OPTIMIZER
+        </div>
+        <div class="flex gap-4 text-xs font-medium text-slate-500">
+          <button
+            id="nav-routine"
+            class="nav-btn nav-active pb-1"
+            onclick="switchTab('routine')"
+          >
+            ROUTINE
+          </button>
+          <button
+            id="nav-cost"
+            class="nav-btn pb-1"
+            onclick="switchTab('cost')"
+          >
+            FINANCE
+          </button>
+          <button
+            id="nav-roadmap"
+            class="nav-btn pb-1"
+            onclick="switchTab('roadmap')"
+          >
+            ROADMAP
+          </button>
+        </div>
+      </nav>
+
+      <!-- Main Content Area -->
+      <main
+        id="main-content"
+        class="flex-grow flex flex-col relative custom-scroll overflow-y-auto"
+      >
+        <!-- Hero Section -->
+        <section
+          class="p-6 bg-slate-900 text-white relative overflow-hidden shrink-0"
+        >
+          <div
+            class="absolute top-0 right-0 opacity-10 text-9xl transform translate-x-10 -translate-y-10"
+          >
+            <i class="fas fa-bolt"></i>
+          </div>
+          <div class="relative z-10">
+            <span
+              class="bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-2 py-1 rounded mb-2 inline-block"
+              >BEGINNER PLAN</span
+            >
+            <h1 class="text-2xl font-bold leading-tight mb-2">
+              Minimal Cost.<br />Maximum Impact.
+            </h1>
+            <p class="text-slate-400 text-xs mb-4">
+              身体改善のMVP（実用最小限の製品）。基礎工事（PV）と材料補給（Shake）にリソースを集中させる戦略的アプローチ。
+            </p>
+
+            <!-- Concept Toggles -->
+            <div class="grid grid-cols-2 gap-3">
+              <div
+                class="bg-emerald-900/50 p-3 rounded-lg border border-emerald-500/30"
+              >
+                <div class="flex items-center gap-2 mb-1">
+                  <i class="fas fa-cube text-emerald-400"></i>
+                  <span class="text-xs font-bold text-emerald-100"
+                    >Pro Vitality</span
+                  >
+                </div>
+                <p class="text-[10px] text-slate-300">
+                  毎日の「基礎工事」。細胞膜を整え、栄養の入り口を作る。
+                </p>
+              </div>
+              <div
+                class="bg-rose-900/50 p-3 rounded-lg border border-rose-500/30"
+              >
+                <div class="flex items-center gap-2 mb-1">
+                  <i class="fas fa-fire text-rose-400"></i>
+                  <span class="text-xs font-bold text-rose-100"
+                    >NeoLife Shake</span
+                  >
+                </div>
+                <p class="text-[10px] text-slate-300">
+                  ここぞという時の「燃料」。脳の覚醒と肌の材料補給。
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 1: ROUTINE (Interactive Week) -->
+        <div
+          id="tab-routine"
+          class="tab-content block p-4 space-y-6 animate-fade-in"
+        >
+          <div class="bg-white">
+            <div class="flex justify-between items-end mb-4">
+              <div>
+                <h2 class="text-lg font-bold text-slate-800">
+                  Weekly Strategy
+                </h2>
+                <p class="text-xs text-slate-500">
+                  作戦A：平日特化型スケジュール
+                </p>
+              </div>
+              <button
+                onclick="toggleEmergencyMode()"
+                id="emergency-btn"
+                class="text-[10px] bg-slate-100 text-slate-500 px-3 py-1.5 rounded-full font-bold hover:bg-rose-100 hover:text-rose-600 transition-colors"
+              >
+                <i class="fas fa-exclamation-circle mr-1"></i>重要日モード
+              </button>
+            </div>
+
+            <!-- Weekly Grid -->
+            <div class="grid grid-cols-7 gap-1.5 mb-6" id="week-grid">
+              <!-- Generated by JS -->
+            </div>
+
+            <!-- Selected Day Detail Panel -->
+            <div
+              id="day-detail-panel"
+              class="bg-white rounded-xl shadow-lg border border-slate-100 overflow-hidden transition-all duration-300"
+            >
+              <div
+                id="panel-header"
+                class="p-4 bg-slate-800 text-white flex justify-between items-center transition-colors duration-300"
+              >
+                <div>
+                  <span
+                    id="detail-day-label"
+                    class="text-xs opacity-70 font-bold uppercase tracking-wider"
+                    >MONDAY</span
+                  >
+                  <h3 id="detail-title" class="text-lg font-bold">
+                    Rocket Start
+                  </h3>
+                </div>
+                <div id="detail-icon" class="text-2xl opacity-80">
+                  <i class="fas fa-shuttle-space"></i>
+                </div>
+              </div>
+              <div class="p-5">
+                <div class="flex items-start gap-4 mb-4">
+                  <div class="bg-slate-50 p-2 rounded text-center min-w-[60px]">
+                    <span class="block text-[10px] text-slate-400">MENU</span>
+                    <div
+                      id="detail-menu-icons"
+                      class="flex justify-center gap-1 mt-1 text-lg"
+                    >
+                      <!-- Icons injected here -->
+                    </div>
+                  </div>
+                  <div>
+                    <h4 class="text-sm font-bold text-slate-700 mb-1">
+                      摂取プラン
+                    </h4>
+                    <p
+                      id="detail-desc"
+                      class="text-xs text-slate-500 leading-relaxed"
+                    >
+                      週の始まり。脳を一気に覚醒させ、トップスピードに乗るためのセット。
+                    </p>
+                  </div>
+                </div>
+
+                <div class="border-t border-slate-100 pt-3 mt-2">
+                  <h4
+                    class="text-[10px] font-bold text-slate-400 uppercase mb-2"
+                  >
+                    Meal Advice
+                  </h4>
+                  <p
+                    id="detail-food"
+                    class="text-xs text-slate-600 bg-yellow-50 p-2 rounded border border-yellow-100"
+                  >
+                    <i class="fas fa-utensils text-yellow-500 mr-1"></i>
+                    朝食をShakeに置き換え。昼は炭水化物を少し控えめにすると午後も眠くならない。
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Monthly Balance Chart -->
+            <div class="mt-8 pt-6 border-t border-slate-100">
+              <h3 class="text-sm font-bold text-slate-700 mb-4 text-center">
+                1ヶ月のエネルギー配分
+              </h3>
+              <div class="chart-container" style="height: 200px">
+                <canvas id="balanceChart"></canvas>
+              </div>
+              <p class="text-[10px] text-center text-slate-400 mt-2">
+                メリハリをつけることで、コストを抑えつつ効果を最大化します。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: FINANCE (Cost Simulation) -->
+        <div id="tab-cost" class="tab-content hidden p-4 space-y-6">
+          <div
+            class="bg-slate-800 rounded-2xl p-6 text-white text-center shadow-lg relative overflow-hidden"
+          >
+            <div
+              class="absolute -top-10 -left-10 w-32 h-32 bg-emerald-500 rounded-full blur-3xl opacity-20"
+            ></div>
+            <div
+              class="absolute -bottom-10 -right-10 w-32 h-32 bg-blue-500 rounded-full blur-3xl opacity-20"
+            ></div>
+
+            <h2 class="text-lg font-bold relative z-10">Monthly Investment</h2>
+            <p class="text-xs text-slate-400 relative z-10 mb-6">
+              定期購入(Cパック)の圧倒的優位性
+            </p>
+
+            <div class="flex justify-center items-end gap-2 mb-2 relative z-10">
+              <span class="text-3xl font-black text-emerald-400">¥16,900</span>
+              <span class="text-sm pb-1 opacity-70">/ month</span>
+            </div>
+            <div
+              class="inline-block bg-white/10 px-3 py-1 rounded-full text-[10px] text-white backdrop-blur-sm"
+            >
+              1日あたり 約560円
+            </div>
+          </div>
+
+          <!-- Cost Comparison Chart -->
+          <div
+            class="bg-white rounded-xl shadow-sm border border-slate-200 p-4"
+          >
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-sm font-bold text-slate-700">
+                コスト比較シミュレーション
+              </h3>
+              <div class="flex items-center gap-2">
+                <span class="text-[10px] text-slate-400">Savings Mode</span>
+                <div
+                  class="w-8 h-4 bg-emerald-500 rounded-full relative cursor-pointer"
+                >
+                  <div
+                    class="w-3 h-3 bg-white rounded-full absolute top-0.5 right-0.5 shadow-sm"
+                  ></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="chart-container">
+              <canvas id="costChart"></canvas>
+            </div>
+
+            <div
+              class="mt-4 bg-emerald-50 border border-emerald-100 rounded-lg p-3 flex gap-3 items-center"
+            >
+              <div
+                class="bg-emerald-100 w-10 h-10 rounded-full flex items-center justify-center shrink-0 text-emerald-600"
+              >
+                <i class="fas fa-piggy-bank text-lg"></i>
+              </div>
+              <div>
+                <p class="text-xs font-bold text-emerald-800">¥6,860 お得！</p>
+                <p class="text-[10px] text-emerald-600 leading-tight">
+                  浮いたお金で、将来的に「亜鉛」を追加したり、Shakeを増量する原資に回せます。
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product Breakdown -->
+          <div class="grid grid-cols-2 gap-3">
+            <div
+              class="bg-white p-3 rounded-lg border border-slate-100 shadow-sm"
+            >
+              <div class="text-[10px] text-slate-400 mb-1">単品購入時</div>
+              <div class="font-bold text-slate-800">¥23,760</div>
+              <div class="w-full bg-slate-100 h-1.5 rounded-full mt-2">
+                <div
+                  class="bg-slate-400 h-1.5 rounded-full"
+                  style="width: 100%"
+                ></div>
+              </div>
+            </div>
+            <div
+              class="bg-white p-3 rounded-lg border-2 border-emerald-100 shadow-sm relative overflow-hidden"
+            >
+              <div
+                class="absolute top-0 right-0 bg-emerald-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-bl"
+              >
+                BEST
+              </div>
+              <div class="text-[10px] text-emerald-600 mb-1">Cパック</div>
+              <div class="font-bold text-emerald-700">¥16,900</div>
+              <div class="w-full bg-slate-100 h-1.5 rounded-full mt-2">
+                <div
+                  class="bg-emerald-500 h-1.5 rounded-full"
+                  style="width: 71%"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: ROADMAP (Timeline) -->
+        <div id="tab-roadmap" class="tab-content hidden p-4 space-y-6">
+          <div class="text-center mb-2">
+            <h2 class="text-lg font-bold text-slate-800">Changes Roadmap</h2>
+            <p class="text-xs text-slate-500">継続することで身体はこう変わる</p>
+          </div>
+
+          <div
+            class="relative pl-6 space-y-8 before:content-[''] before:absolute before:left-[11px] before:top-2 before:bottom-0 before:w-0.5 before:bg-slate-200"
+          >
+            <!-- Month 1 -->
+            <div
+              class="relative roadmap-item group cursor-pointer"
+              onclick="toggleRoadmapItem(this)"
+            >
+              <div
+                class="absolute -left-[27px] bg-white border-4 border-emerald-500 w-6 h-6 rounded-full flex items-center justify-center z-10 group-hover:scale-110 transition-transform"
+              >
+                <span class="text-[8px] font-bold text-emerald-700">1</span>
+              </div>
+              <div
+                class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 group-hover:border-emerald-200 transition-colors"
+              >
+                <div class="flex justify-between items-center mb-2">
+                  <h3 class="font-bold text-slate-800 text-sm">
+                    Month 1: 体感期
+                  </h3>
+                  <i
+                    class="fas fa-chevron-down text-slate-300 text-xs transition-transform group-[.active]:rotate-180"
+                  ></i>
+                </div>
+                <p class="text-xs text-slate-500 mb-3">
+                  栄養不足の解消と、細胞膜の柔軟化が始まる時期。
+                </p>
+
+                <!-- Checklist (Hidden by default, shown on click) -->
+                <div
+                  class="checklist space-y-2 hidden group-[.active]:block animate-fade-in"
+                >
+                  <label
+                    class="flex items-center gap-2 p-2 bg-slate-50 rounded hover:bg-emerald-50 cursor-pointer transition-colors"
+                  >
+                    <input
+                      type="checkbox"
+                      class="w-4 h-4 rounded text-emerald-500 focus:ring-emerald-500 border-gray-300"
+                    />
+                    <span class="text-xs text-slate-600"
+                      >夕方の集中力が続く</span
+                    >
+                  </label>
+                  <label
+                    class="flex items-center gap-2 p-2 bg-slate-50 rounded hover:bg-emerald-50 cursor-pointer transition-colors"
+                  >
+                    <input
+                      type="checkbox"
+                      class="w-4 h-4 rounded text-emerald-500 focus:ring-emerald-500 border-gray-300"
+                    />
+                    <span class="text-xs text-slate-600"
+                      >朝の目覚めがスッキリ</span
+                    >
+                  </label>
+                  <label
+                    class="flex items-center gap-2 p-2 bg-slate-50 rounded hover:bg-emerald-50 cursor-pointer transition-colors"
+                  >
+                    <input
+                      type="checkbox"
+                      class="w-4 h-4 rounded text-emerald-500 focus:ring-emerald-500 border-gray-300"
+                    />
+                    <span class="text-xs text-slate-600"
+                      >肌の乾燥・粉吹きが減る</span
+                    >
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Month 3 -->
+            <div
+              class="relative roadmap-item group cursor-pointer"
+              onclick="toggleRoadmapItem(this)"
+            >
+              <div
+                class="absolute -left-[27px] bg-white border-4 border-rose-400 w-6 h-6 rounded-full flex items-center justify-center z-10 group-hover:scale-110 transition-transform"
+              >
+                <span class="text-[8px] font-bold text-rose-600">3</span>
+              </div>
+              <div
+                class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 group-hover:border-rose-200 transition-colors"
+              >
+                <div class="flex justify-between items-center mb-2">
+                  <h3 class="font-bold text-slate-800 text-sm">
+                    Month 3: 変化期
+                  </h3>
+                  <i
+                    class="fas fa-chevron-down text-slate-300 text-xs transition-transform group-[.active]:rotate-180"
+                  ></i>
+                </div>
+                <p class="text-xs text-slate-500 mb-3">
+                  肌のターンオーバーが完了し、細胞レベルで入れ替わる。
+                </p>
+
+                <div
+                  class="checklist space-y-2 hidden group-[.active]:block animate-fade-in"
+                >
+                  <label
+                    class="flex items-center gap-2 p-2 bg-slate-50 rounded hover:bg-rose-50 cursor-pointer transition-colors"
+                  >
+                    <input
+                      type="checkbox"
+                      class="w-4 h-4 rounded text-rose-500 focus:ring-rose-500 border-gray-300"
+                    />
+                    <span class="text-xs text-slate-600"
+                      >肌トーンUP・くすみ抜け</span
+                    >
+                  </label>
+                  <label
+                    class="flex items-center gap-2 p-2 bg-slate-50 rounded hover:bg-rose-50 cursor-pointer transition-colors"
+                  >
+                    <input
+                      type="checkbox"
+                      class="w-4 h-4 rounded text-rose-500 focus:ring-rose-500 border-gray-300"
+                    />
+                    <span class="text-xs text-slate-600">日中の眠気が消失</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Future -->
+            <div class="relative roadmap-item">
+              <div
+                class="absolute -left-[27px] bg-slate-200 w-6 h-6 rounded-full flex items-center justify-center z-10"
+              >
+                <i class="fas fa-flag text-[10px] text-slate-500"></i>
+              </div>
+              <div
+                class="p-4 rounded-xl border-2 border-dashed border-slate-200 opacity-70"
+              >
+                <h3 class="font-bold text-slate-400 text-sm mb-1">Next Step</h3>
+                <p class="text-xs text-slate-400">
+                  余裕ができたら、夜に<strong class="text-slate-600"
+                    >亜鉛</strong
+                  >を追加してクレーター修復を加速。
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-auto p-6 text-center bg-slate-50">
+          <p class="text-xs text-slate-400 mb-4">
+            全部やる必要はありません。<br />まずは<span
+              class="font-bold text-slate-600"
+              >「朝のPV、勝負の日のShake」</span
+            >から。
+          </p>
+          <a
+            href="https://www.neolife-japan.com/product_cat/neolife/"
+            target="_blank"
+            class="inline-block bg-slate-800 text-white text-xs font-bold py-3 px-8 rounded-full shadow-lg hover:bg-slate-700 transition transform hover:-translate-y-1"
+          >
+            製品詳細を見る <i class="fas fa-external-link-alt ml-1"></i>
+          </a>
+        </div>
+      </main>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+      // --- DATA & STATE ---
+      const weekData = [
+        {
+          day: "Mon",
+          fullDay: "Monday",
+          type: "shake",
+          title: "Rocket Start",
+          icon: "fa-rocket",
+          desc: "週の始まり。脳を一気に覚醒させ、トップスピードに乗るためのセット。",
+          food: "朝食をShakeに置き換え。昼は炭水化物を少し控えめに。",
+        },
+        {
+          day: "Tue",
+          fullDay: "Tuesday",
+          type: "maintenance",
+          title: "Basic Maintain",
+          icon: "fa-leaf",
+          desc: "基礎維持モード。低コストな食事で栄養バランスを整える。",
+          food: "卵かけご飯や納豆など、安価で良質なタンパク質を。",
+        },
+        {
+          day: "Wed",
+          fullDay: "Wednesday",
+          type: "shake",
+          title: "Re-Ignition",
+          icon: "fa-fire",
+          desc: "中だるみ防止。週半ばの疲れをリセットし、集中力を再点火。",
+          food: "疲れを感じたら昼食後にもビタミンを追加（あれば）。",
+        },
+        {
+          day: "Thu",
+          fullDay: "Thursday",
+          type: "maintenance",
+          title: "Basic Maintain",
+          icon: "fa-leaf",
+          desc: "週末に向けて体調を整える基礎維持日。",
+          food: "消化に良い温かい食事を心がける。",
+        },
+        {
+          day: "Fri",
+          fullDay: "Friday",
+          type: "shake",
+          title: "Last Spurt",
+          icon: "fa-flag-checkered",
+          desc: "最も忙しい日に備え、最高のパフォーマンスを絞り出す。",
+          food: "Shakeでエネルギー充填。夜は軽めにして睡眠の質を高める。",
+        },
+        {
+          day: "Sat",
+          fullDay: "Saturday",
+          type: "rest",
+          title: "Rest & Recovery",
+          icon: "fa-mug-hot",
+          desc: "休息日。好きなものを食べてリラックスし、心身を緩める。",
+          food: "食事制限なし。ストレスフリーに過ごす。",
+        },
+        {
+          day: "Sun",
+          fullDay: "Sunday",
+          type: "rest",
+          title: "Prepare",
+          icon: "fa-sun",
+          desc: "翌週への準備。PVで最低限の防御をしておく。",
+          food: "夕食は少し早めに摂り、内臓を休める。",
+        },
+      ];
+
+      let currentDayIndex = 0; // Monday
+      let isEmergencyMode = false;
+
+      // --- DOM ELEMENTS ---
+      const gridEl = document.getElementById("week-grid");
+      const detailPanel = document.getElementById("day-detail-panel");
+      const panelHeader = document.getElementById("panel-header");
+
+      // --- INITIALIZATION ---
+      document.addEventListener("DOMContentLoaded", () => {
+        renderWeekGrid();
+        updateDetailPanel(0);
+        initCharts();
+
+        // Auto-open first roadmap item for demo
+        const firstRoadmap = document.querySelector(".roadmap-item");
+        if (firstRoadmap) toggleRoadmapItem(firstRoadmap);
+      });
+
+      // --- NAVIGATION ---
+      function switchTab(tabName) {
+        // Hide all tabs
+        document
+          .querySelectorAll(".tab-content")
+          .forEach((el) => el.classList.add("hidden"));
+        document
+          .querySelectorAll(".tab-content")
+          .forEach((el) => el.classList.remove("block"));
+
+        // Show selected tab
+        const selectedTab = document.getElementById(`tab-${tabName}`);
+        selectedTab.classList.remove("hidden");
+        selectedTab.classList.add("block");
+
+        // Update Nav Buttons
+        document.querySelectorAll(".nav-btn").forEach((btn) => {
+          btn.classList.remove("nav-active", "text-emerald-600");
+        });
+        document
+          .getElementById(`nav-${tabName}`)
+          .classList.add("nav-active", "text-emerald-600");
+      }
+
+      // --- ROUTINE LOGIC ---
+      function renderWeekGrid() {
+        gridEl.innerHTML = "";
+        weekData.forEach((day, index) => {
+          const isShake =
+            day.type === "shake" ||
+            (isEmergencyMode &&
+              (day.type === "maintenance" || day.type === "rest"));
+
+          const btn = document.createElement("div");
+          btn.className = `day-card rounded-lg p-2 text-center border-2 flex flex-col items-center justify-center h-16 relative overflow-hidden ${
+            index === currentDayIndex
+              ? "active-day shadow-md"
+              : "border-transparent bg-white shadow-sm"
+          }`;
+
+          // Color Logic
+          if (isShake) {
+            btn.classList.add("bg-rose-50", "border-rose-200");
+            btn.innerHTML = `
+                        <span class="text-[10px] font-bold text-rose-400 mb-1">${day.day}</span>
+                        <i class="fas fa-wine-glass text-rose-500 text-lg"></i>
+                    `;
+          } else {
+            btn.classList.add("bg-emerald-50", "border-emerald-100");
+            btn.innerHTML = `
+                        <span class="text-[10px] font-bold text-emerald-400 mb-1">${day.day}</span>
+                        <i class="fas fa-pills text-emerald-500 text-lg"></i>
+                    `;
+          }
+
+          // Add emergency indicator
+          if (isEmergencyMode && day.type !== "shake") {
+            const badge = document.createElement("div");
+            badge.className =
+              "absolute top-0 right-0 w-2 h-2 bg-rose-500 rounded-full";
+            btn.appendChild(badge);
+          }
+
+          btn.onclick = () => {
+            currentDayIndex = index;
+            renderWeekGrid(); // Re-render to update active state
+            updateDetailPanel(index);
+          };
+          gridEl.appendChild(btn);
+        });
+      }
+
+      function updateDetailPanel(index) {
+        const data = weekData[index];
+        const isShake =
+          data.type === "shake" ||
+          (isEmergencyMode &&
+            (data.type === "maintenance" || data.type === "rest"));
+
+        // Animate content change
+        detailPanel.style.opacity = "0.7";
+        setTimeout(() => {
+          // Texts
+          document.getElementById("detail-day-label").innerText = data.fullDay;
+          document.getElementById("detail-title").innerText =
+            isEmergencyMode && data.type !== "shake"
+              ? "Emergency Boost!"
+              : data.title;
+          document.getElementById("detail-desc").innerText = data.desc;
+          document.getElementById(
+            "detail-food"
+          ).innerHTML = `<i class="fas fa-utensils text-yellow-500 mr-1"></i> ${data.food}`;
+
+          // Icon
+          const mainIcon = document.getElementById("detail-icon");
+          mainIcon.innerHTML = `<i class="fas ${
+            isEmergencyMode && data.type !== "shake" ? "fa-bolt" : data.icon
+          }"></i>`;
+
+          // Menu Icons
+          const menuContainer = document.getElementById("detail-menu-icons");
+          if (isShake) {
+            menuContainer.innerHTML = `
+                        <i class="fas fa-wine-glass text-rose-500" title="Shake"></i>
+                        <span class="text-xs text-slate-300">+</span>
+                        <i class="fas fa-pills text-emerald-500" title="PV"></i>
+                    `;
+            // Header Style - Shake
+            panelHeader.className =
+              "p-4 text-white flex justify-between items-center transition-colors duration-300 shake-gradient";
+          } else {
+            menuContainer.innerHTML = `
+                        <i class="fas fa-egg text-yellow-500" title="Meal"></i>
+                        <span class="text-xs text-slate-300">+</span>
+                        <i class="fas fa-pills text-emerald-500" title="PV"></i>
+                    `;
+            // Header Style - Maintenance
+            panelHeader.className =
+              "p-4 text-white flex justify-between items-center transition-colors duration-300 bg-slate-800"; // Default dark
+            if (data.type === "maintenance" || data.type === "rest") {
+              panelHeader.className =
+                "p-4 text-white flex justify-between items-center transition-colors duration-300 bg-slate-700";
+            }
+          }
+
+          detailPanel.style.opacity = "1";
+        }, 150);
+      }
+
+      function toggleEmergencyMode() {
+        isEmergencyMode = !isEmergencyMode;
+        const btn = document.getElementById("emergency-btn");
+
+        if (isEmergencyMode) {
+          btn.classList.remove("bg-slate-100", "text-slate-500");
+          btn.classList.add("bg-rose-500", "text-white");
+          btn.innerHTML = `<i class="fas fa-bolt mr-1"></i>モードON`;
+        } else {
+          btn.classList.add("bg-slate-100", "text-slate-500");
+          btn.classList.remove("bg-rose-500", "text-white");
+          btn.innerHTML = `<i class="fas fa-exclamation-circle mr-1"></i>重要日モード`;
+        }
+        renderWeekGrid();
+        updateDetailPanel(currentDayIndex);
+      }
+
+      function toggleRoadmapItem(element) {
+        // Close others (optional, keep it accordion style)
+        // document.querySelectorAll('.roadmap-item').forEach(item => item.classList.remove('active'));
+
+        element.classList.toggle("active");
+      }
+
+      // --- CHARTS ---
+      function initCharts() {
+        // 1. Balance Doughnut Chart
+        const ctxBalance = document
+          .getElementById("balanceChart")
+          .getContext("2d");
+        new Chart(ctxBalance, {
+          type: "doughnut",
+          data: {
+            labels: ["Shake Days (High Perf)", "Maintenance (Low Cost)"],
+            datasets: [
+              {
+                data: [12, 18], // Approx 3 days/week * 4 weeks
+                backgroundColor: ["#f43f5e", "#10b981"], // Rose, Emerald
+                borderWidth: 0,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: "bottom",
+                labels: { usePointStyle: true, font: { size: 10 } },
+              },
+            },
+            cutout: "70%",
+          },
+        });
+
+        // 2. Cost Bar Chart
+        const ctxCost = document.getElementById("costChart").getContext("2d");
+        new Chart(ctxCost, {
+          type: "bar",
+          data: {
+            labels: ["One-time Purchase", "Regular (C Pack)"],
+            datasets: [
+              {
+                label: "Monthly Cost (JPY)",
+                data: [23760, 16900],
+                backgroundColor: ["#cbd5e1", "#10b981"],
+                borderRadius: 6,
+                barPercentage: 0.6,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                grid: { display: false },
+                ticks: { font: { size: 10 } },
+              },
+              x: {
+                grid: { display: false },
+                ticks: { font: { size: 11, weight: "bold" } },
+              },
+            },
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: function (context) {
+                    return " ¥" + context.parsed.y.toLocaleString();
+                  },
+                },
+              },
+            },
+          },
+        });
+      }
+    </script>
+  </body>
+</html>
