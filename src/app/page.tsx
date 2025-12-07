@@ -14,8 +14,18 @@ type TabType = "routine" | "cost" | "roadmap";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<TabType>("routine");
-  const [currentDayIndex, setCurrentDayIndex] = useState(0);
+
+  // Calculate today's index (0=Mon, ..., 6=Sun)
+  // JS getDay(): 0=Sun, 1=Mon, ..., 6=Sat
+  // weekData: 0=Mon, ..., 6=Sun
+  const getTodayIndex = () => {
+    const day = new Date().getDay();
+    return (day + 6) % 7;
+  };
+
+  const [currentDayIndex, setCurrentDayIndex] = useState(getTodayIndex());
   const [isEmergencyMode, setIsEmergencyMode] = useState(false);
+  const todayIndex = getTodayIndex();
 
   return (
     <div className="max-w-md mx-auto bg-white min-h-screen shadow-2xl relative overflow-hidden flex flex-col">
@@ -132,6 +142,7 @@ export default function Home() {
                     day={day}
                     index={index}
                     isActive={currentDayIndex === index}
+                    isToday={todayIndex === index}
                     isEmergencyMode={isEmergencyMode}
                     onClick={() => setCurrentDayIndex(index)}
                   />

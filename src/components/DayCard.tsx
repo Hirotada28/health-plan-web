@@ -6,6 +6,7 @@ interface DayCardProps {
   day: WeekDay;
   index: number;
   isActive: boolean;
+  isToday: boolean;
   isEmergencyMode: boolean;
   onClick: () => void;
 }
@@ -14,6 +15,7 @@ export default function DayCard({
   day,
   index,
   isActive,
+  isToday,
   isEmergencyMode,
   onClick,
 }: DayCardProps) {
@@ -37,8 +39,13 @@ export default function DayCard({
       `}
       onClick={onClick}
     >
+      {isToday && (
+        <div className="absolute top-0 left-0 w-full bg-slate-800 text-white text-[8px] font-bold leading-none py-0.5">
+          TODAY
+        </div>
+      )}
       <span
-        className={`text-[10px] font-bold mb-1 ${
+        className={`text-[10px] font-bold mb-1 ${isToday ? "mt-2" : ""} ${
           isShake ? "text-rose-400" : "text-emerald-400"
         }`}
       >
