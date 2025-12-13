@@ -310,14 +310,6 @@ export default function Home() {
             <br />
             このシンプルな習慣だけで、身体は確実に変わり始めます。
           </p>
-          <a
-            href="https://www.neolife-japan.com/product_cat/neolife/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block bg-slate-800 text-white text-xs font-bold py-3 px-8 rounded-full shadow-lg hover:bg-slate-700 transition transform hover:-translate-y-1"
-          >
-            製品詳細を見る <i className="fas fa-external-link-alt ml-1"></i>
-          </a>
         </div>
       </main>
     </div>
