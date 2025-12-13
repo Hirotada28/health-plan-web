@@ -16,10 +16,10 @@ export default function NavButton({
   return (
     <button
       id={id}
-      className={`pb-1 text-xs font-medium transition-colors ${
+      className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${
         isActive
-          ? "border-b-3 border-emerald-500 text-slate-800 font-bold"
-          : "text-slate-500 hover:text-slate-700"
+          ? "bg-slate-800 text-white shadow-md transform scale-105"
+          : "bg-transparent text-slate-400 hover:bg-slate-100 hover:text-slate-600"
       }`}
       onClick={onClick}
     >

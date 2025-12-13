@@ -34,7 +34,7 @@ export default function Home() {
         <div className="font-black text-xl tracking-tighter text-slate-800">
           <span className="text-emerald-500">MVP</span> OPTIMIZER
         </div>
-        <div className="flex gap-4">
+        <div className="flex gap-2">
           <NavButton
             id="nav-routine"
             label="ROUTINE"
